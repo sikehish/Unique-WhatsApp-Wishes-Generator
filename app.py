@@ -4,6 +4,8 @@ import pyautogui as pg
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
+from InquirerPy import prompt
+import glob
 
 pg.FAILSAFE = False
 
@@ -46,6 +48,29 @@ def send_whatsapp_message(phone_number, message, wait_time=30):
     except Exception as e:
         print(f"Error occurred: {e}")
 
+def list_txt_files():
+    # lists all .txt files except requirements.txt
+    txt_files = glob.glob("*.txt")
+    txt_files.remove("requirements.txt")
+    return txt_files
+
+def choose_file():
+    txt_files = list_txt_files()
+    if not txt_files:
+        print("No .txt files found in the directory.")
+        return None
+    
+    questions = [
+        {
+            'type': 'list',
+            'name': 'file',
+            'message': 'Select a file:',
+            'choices': txt_files
+        }
+    ]
+    answer = prompt(questions)
+    return answer['file']
+
 def send_messages_to_contacts(file_path, wish):
     try:
         GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
@@ -53,8 +78,8 @@ def send_messages_to_contacts(file_path, wish):
         model = genai.GenerativeModel('gemini-1.5-flash')
         with open(file_path, 'r') as file:
             contacts = file.readlines()
-            for contact in contacts: # Generating a unique wish for each contact
-                response = model.generate_content(wish)
+            for contact in contacts: # generate a unique wish for each contact
+                response = model.generate_content(f'Please generate a wish with the requirement: {wish}')
                 message = response.text.strip() 
                 print(f"Generated message:\n{message}\n")
                 phone_number = contact.strip()  
@@ -64,7 +89,9 @@ def send_messages_to_contacts(file_path, wish):
     except Exception as e:
         print(f"Error occurred while sending messages: {e}")
 
-contacts_file = "contacts.txt"
-wish =input("What kind of wish do you want to generate?  ")
-
-send_messages_to_contacts(contacts_file, wish)
+file_path = choose_file()
+if file_path:
+    wish = input("What kind of wish do you want to generate? ")
+    send_messages_to_contacts(file_path, wish)
+else:
+    print("No file selected. Exiting the program.")
