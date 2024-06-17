@@ -4,12 +4,12 @@ import pyautogui as pg
 
 pg.FAILSAFE = False
 
-def send_whatsapp_message(phone_number, message, wait_time=20):
+def send_whatsapp_message(phone_number, message, wait_time=30):
     try:
         web.open(f"https://web.whatsapp.com/send?phone={phone_number}")
         sleep(wait_time)
         
-        pg.hotkey('ctrl', 'a')  # selects the existing text(draft entered previously)
+        pg.hotkey('ctrl', 'a')  # selects the existing text (draft entered previously)
         pg.press('backspace')   # this deletes it
 
         index = 0
@@ -31,12 +31,29 @@ def send_whatsapp_message(phone_number, message, wait_time=20):
             index += 1
         
         pg.press('enter')
-        print("Message sent successfully.")
-    
+        print(f"Message sent successfully to {phone_number}.")
+        
+        sleep(2)
+        
+        # closing whatsapp tab
+        pg.hotkey('ctrl', 'w')
+
     except Exception as e:
         print(f"Error occurred: {e}")
 
-phone_number = "+8594854854" # dummy number for safety :P
+def send_messages_to_contacts(file_path, message):
+    try:
+        with open(file_path, 'r') as file:
+            contacts = file.readlines()
+            for contact in contacts:
+                phone_number = contact.strip()  
+                send_whatsapp_message(phone_number, message)
+                sleep(5) # optional delay
+    except Exception as e:
+        print(f"Error occurred while sending messages: {e}")
+
+contacts_file = "contacts.txt"
 message = "HAVE FUN!"
 
-send_whatsapp_message(phone_number, message)
+# Send messages to contacts from the file
+send_messages_to_contacts(contacts_file, message)
