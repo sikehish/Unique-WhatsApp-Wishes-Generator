@@ -1,6 +1,6 @@
 # Unique-WhatsApp-Wishes-Generator
 
-A script that helps in generating unique, personalized wishes and sends them to every number listed in a chosen `.txt` file. This tool can be used to send unique and cool personalized messages on various occasions and festivals using the power of AI.
+A script that helps in generating unique, personalized wishes and sends them to every number listed in a chosen `.txt` file using WhatsApp web. This tool can be used to send unique and cool personalized messages on various occasions and festivals using the power of AI.
 
 ## Features
 
